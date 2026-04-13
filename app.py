@@ -14,41 +14,42 @@ def generate():
     audience = data.get("audience", "")
 
     return jsonify({
-    "offer": "For busy professionals, get premium coffee in under 2 minutes without waiting in line.",
+        "offer": "For busy professionals, get premium coffee in under 2 minutes without waiting in line.",
 
-    "angles": [
-        "Speed: No waiting",
-        "Convenience: Order ahead",
-        "Productivity: Save time every morning",
-        "Quality: Premium taste fast",
-        "Stress-free mornings"
-    ],
-
-    "facebook_ad": "Still waiting in line for coffee? Get premium coffee in under 2 minutes and take back your mornings.",
-
-    "google_ads": {
-        "headlines": [
-            "Fast Coffee in 2 Minutes",
-            "Skip the Coffee Line",
-            "Order Ahead Coffee"
+        "angles": [
+            "Speed: No waiting",
+            "Convenience: Order ahead",
+            "Productivity: Save time every morning",
+            "Quality: Premium taste fast",
+            "Stress-free mornings"
         ],
-        "descriptions": [
-            "Premium coffee, no waiting.",
-            "Order ahead and grab instantly."
-        ]
-    },
 
-    "ctas": [
-        "Order Ahead Now",
-        "Skip the Line",
-        "Get Coffee Fast"
-    ],
+        "facebook_ad": "Still waiting in line for coffee? Get premium coffee in under 2 minutes and take back your mornings.",
 
-    "email": {
-        "subject": "Your coffee is ready before you arrive",
-        "body": "Order ahead and get premium coffee in under 2 minutes. No more waiting in line."
-    }
-})
+        "google_ads": {
+            "headlines": [
+                "Fast Coffee in 2 Minutes",
+                "Skip the Coffee Line",
+                "Order Ahead Coffee"
+            ],
+            "descriptions": [
+                "Premium coffee, no waiting.",
+                "Order ahead and grab instantly."
+            ]
+        },
+
+        "ctas": [
+            "Order Ahead Now",
+            "Skip the Line",
+            "Get Coffee Fast"
+        ],
+
+        "email": {
+            "subject": "Your coffee is ready before you arrive",
+            "body": "Order ahead and get premium coffee in under 2 minutes. No more waiting in line."
+        }
+    })
+
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
