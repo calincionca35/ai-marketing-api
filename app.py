@@ -27,11 +27,18 @@ def generate():
     general_rules = "\n".join(config["general_rules"])
     google_rules = "\n".join(config["google_ads_rules"])
 
+    # 🔥 NEW: pull strict strategy rules from JSON
+    strategy_rules_list = config.get("strategy_rules", {}).get(strategy, [])
+    strategy_rules = "\n".join(strategy_rules_list)
+
     prompt = f"""
 {config["system_prompt"]}
 
 General Rules:
 {general_rules}
+
+Strategy Rules ({strategy}):
+{strategy_rules}
 
 Business: {business}
 Goal: {goal}
@@ -39,20 +46,6 @@ Audience: {audience}
 
 Google Ads Rules:
 {google_rules}
-
-Strategy Mode: {strategy}
-"""
-
-    if strategy == "luxury":
-        prompt += "\nTone: premium, high-end, sophisticated."
-    elif strategy == "fun":
-        prompt += "\nTone: playful, simple, energetic."
-    elif strategy == "direct":
-        prompt += "\nTone: clear, straightforward, no fluff, sales-focused."
-    else:
-        prompt += "\nTone: conversion-focused and balanced."
-
-    prompt += """
 
 Return ONLY valid JSON in this format:
 
@@ -75,7 +68,7 @@ Return ONLY valid JSON in this format:
     completion = client.chat.completions.create(
         model="llama-3.3-70b-versatile",
         messages=[{"role": "user", "content": prompt}],
-        temperature=0.7,
+        temperature=0.6,
         max_completion_tokens=1200
     )
 
