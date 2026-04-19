@@ -7,15 +7,31 @@ import json
 app = Flask(__name__)
 CORS(app)
 
-# Load Groq API key
+# Groq client
 client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 
-# Load prompt config from JSON file
+# Load prompt config
 def load_prompt_config():
     with open("prompt_config.json", "r") as f:
         return json.load(f)
 
 config = load_prompt_config()
+
+
+# ---------- ENFORCE GOOGLE ADS LIMITS ----------
+def enforce_limits(data):
+    if "google_ads" in data:
+        if "headlines" in data["google_ads"]:
+            data["google_ads"]["headlines"] = [
+                h[:30] for h in data["google_ads"]["headlines"]
+            ]
+
+        if "descriptions" in data["google_ads"]:
+            data["google_ads"]["descriptions"] = [
+                d[:90] for d in data["google_ads"]["descriptions"]
+            ]
+
+    return data
 
 
 @app.route("/generate", methods=["POST"])
@@ -38,7 +54,7 @@ Business: {business}
 Goal: {goal}
 Audience: {audience}
 
-Return in this format:
+Return EXACT format:
 
 {{
   "offer": "string",
@@ -79,7 +95,12 @@ Return in this format:
 
     try:
         data = json.loads(response_text[start:end+1])
+
+        # enforce Google Ads limits here
+        data = enforce_limits(data)
+
         return jsonify(data)
+
     except Exception as e:
         return jsonify({
             "error": str(e),
