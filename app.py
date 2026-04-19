@@ -7,7 +7,16 @@ import json
 app = Flask(__name__)
 CORS(app)
 
+# Load Groq API key
 client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
+
+# Load prompt config from JSON file
+def load_prompt_config():
+    with open("prompt_config.json", "r") as f:
+        return json.load(f)
+
+config = load_prompt_config()
+
 
 @app.route("/generate", methods=["POST"])
 def generate():
@@ -18,15 +27,18 @@ def generate():
     audience = data.get("audience", "")
 
     prompt = f"""
-Return ONLY valid JSON.
+{config["system_prompt"]}
 
-Do not return empty values.
+Rules:
+{chr(10).join(config["rules"])}
+
+Return ONLY valid JSON.
 
 Business: {business}
 Goal: {goal}
 Audience: {audience}
 
-Return:
+Return in this format:
 
 {{
   "offer": "string",
@@ -46,25 +58,33 @@ Return:
 
     completion = client.chat.completions.create(
         model="llama-3.3-70b-versatile",
-        messages=[{"role": "user", "content": prompt}],
-        temperature=0.8,
+        messages=[
+            {"role": "user", "content": prompt}
+        ],
+        temperature=0.7,
         max_completion_tokens=1200
     )
 
-    raw = completion.choices[0].message.content.strip()
+    response_text = completion.choices[0].message.content.strip()
 
-    print("RAW:", raw)
-
-    start = raw.find("{")
-    end = raw.rfind("}")
+    # Extract JSON safely
+    start = response_text.find("{")
+    end = response_text.rfind("}")
 
     if start == -1 or end == -1:
-        return jsonify({"error": "No JSON returned", "raw": raw}), 500
+        return jsonify({
+            "error": "No JSON returned",
+            "raw": response_text
+        }), 500
 
     try:
-        return jsonify(json.loads(raw[start:end+1]))
+        data = json.loads(response_text[start:end+1])
+        return jsonify(data)
     except Exception as e:
-        return jsonify({"error": str(e), "raw": raw}), 500
+        return jsonify({
+            "error": str(e),
+            "raw": response_text
+        }), 500
 
 
 if __name__ == "__main__":
