@@ -10,16 +10,16 @@
 
   "google_ads_rules": [
     "Headlines MUST be max 30 characters including spaces",
-    "Descriptions MUST be max 90 characters including spaces",
-    "Do NOT exceed limits",
-    "Do NOT truncate mid-word",
-    "Rewrite content so it fits naturally within limits",
-    "Use as much of the allowed character limit as possible",
-    "Headlines should be close to 30 characters",
-    "Descriptions MUST be full sentences with clear benefit and CTA",
-    "Descriptions MUST be persuasive and conversion-focused",
-    "Descriptions MUST be close to 90 characters",
-    "Descriptions MUST include a benefit or outcome",
-    "Descriptions MUST feel like real paid ads, not short phrases"
+  "Descriptions MUST be 70 to 90 characters including spaces",
+
+  "Never exceed character limits",
+  "Never truncate mid-word",
+  "Rewrite sentences so they naturally fit within limits",
+
+  "Headlines must be short, punchy, and conversion-focused",
+  "Descriptions must be full sentences with: benefit + outcome + soft CTA",
+
+  "Avoid slogans or fragments like 'Drink more, pay less'",
+  "Write like real Google Ads copy, not taglines"
   ]
 }
