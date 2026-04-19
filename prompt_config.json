@@ -4,6 +4,12 @@
     "No generic marketing phrases",
     "Be specific and realistic",
     "Focus on conversion psychology",
-    "Avoid filler language"
+    "Avoid filler language",
+
+    "Google Ads Headlines MUST be max 30 characters including spaces",
+    "Google Ads Descriptions MUST be max 90 characters including spaces",
+    "Do NOT exceed limits",
+    "Do NOT truncate mid-word",
+    "Rewrite content so it fits naturally within limits"
   ]
 }
