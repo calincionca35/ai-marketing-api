@@ -15,36 +15,48 @@
   "strategy_rules": {
     "conversion": [
       "Prioritize immediate action over explanation",
-      "Use direct verbs only: donate, drop off, schedule, visit, bring, buy",
-      "Remove emotional or moral framing",
-      "No abstract phrases like community impact or sustainability messaging",
+      "Use urgency, scarcity, or friction removal",
+      "Every line must push a decision",
+      "No vague phrases like 'great deals' or 'shop local'",
+      "Prefer strong verbs: buy, get, claim, reserve, drop off, order",
+      "Assume user is ready to act now",
       "Short sentences only",
       "Every section must include a clear CTA or action step",
       "Focus on speed, simplicity, and immediacy"
     ],
 
     "direct": [
-      "Extremely minimal wording",
-      "Pure transactional commands only",
+      "Use only transactional or command-style sentences",
+      "Remove branding language and storytelling completely",
       "No explanations or supporting language",
       "Every line must be an instruction or action",
-      "Eliminate adjectives unless required for clarity"
+      "Prefer imperative verbs only: buy, get, claim, drop off",
+      "No adjectives unless required for clarity",
+      "Eliminate all filler language",
+      "Pure minimal output only"
     ],
 
     "luxury": [
-      "Use high-end, premium vocabulary",
-      "Emphasize exclusivity and quality over urgency",
-      "Avoid aggressive CTAs or urgency language",
-      "Slower, more refined sentence structure",
-      "Focus on status, prestige, and experience"
+      "No urgency or discounts",
+      "No mass-market or retail language",
+      "Avoid words like sale, discount, cheap, shop now",
+      "Use exclusivity, rarity, curation, invitation language",
+      "Short, refined sentences with controlled tone",
+      "Make the product feel limited and selective",
+      "CTAs must be soft invitations, not commands",
+      "Focus on status, prestige, and experience",
+      "Avoid aggressive conversion language"
     ],
 
     "fun": [
-      "Use playful, casual tone",
-      "Short witty phrasing allowed",
-      "Light humor is acceptable if it improves engagement",
-      "Avoid seriousness or formal tone",
-      "Keep language simple and conversational"
+      "Use playful, human tone with light humor",
+      "Avoid standard ad phrases like shop now or save big",
+      "Use unexpected hooks or conversational language",
+      "Make copy feel like a social post, not an ad",
+      "Allow personality over strict sales language",
+      "Keep energy high but not salesy",
+      "Prioritize engagement over conversion pressure",
+      "Short witty phrasing is allowed"
     ]
   },
 
