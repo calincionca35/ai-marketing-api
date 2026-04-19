@@ -7,7 +7,7 @@ import json
 app = Flask(__name__)
 CORS(app)
 
-# Groq client (API key stored in Render/GitHub env vars)
+# Groq client (expects GROQ_API_KEY in Render environment variables)
 client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 
 @app.route("/generate", methods=["POST"])
@@ -19,15 +19,18 @@ def generate():
     audience = data.get("audience", "")
 
     prompt = f"""
-Return ONLY valid JSON.
+You are a JSON generator.
 
-Create a marketing campaign.
+Return ONLY valid JSON.
+No markdown.
+No explanation.
+No backticks.
 
 Business: {business}
 Goal: {goal}
 Audience: {audience}
 
-Format exactly like this:
+Output format:
 
 {{
   "offer": "",
@@ -45,27 +48,41 @@ Format exactly like this:
 }}
 """
 
-    completion = client.chat.completions.create(
-        model="llama-3.3-70b-versatile",
-        messages=[
-            {"role": "user", "content": prompt}
-        ],
-        temperature=0.7,
-        max_completion_tokens=1500
-    )
-
-    response_text = completion.choices[0].message.content
-
-    # Convert AI text → real JSON
     try:
-        response_json = json.loads(response_text)
-    except Exception:
-        return jsonify({
-            "error": "Invalid JSON returned from model",
-            "raw": response_text
-        }), 500
+        completion = client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=[
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.7,
+            max_completion_tokens=1500
+        )
 
-    return jsonify(response_json)
+        response_text = completion.choices[0].message.content.strip()
+
+        # Try strict JSON parse
+        try:
+            response_json = json.loads(response_text)
+            return jsonify(response_json)
+
+        except Exception:
+            # fallback: try to extract JSON block
+            start = response_text.find("{")
+            end = response_text.rfind("}")
+
+            if start != -1 and end != -1:
+                cleaned = response_text[start:end+1]
+                return jsonify(json.loads(cleaned))
+
+            return jsonify({
+                "error": "Model did not return valid JSON",
+                "raw": response_text
+            }), 500
+
+    except Exception as e:
+        return jsonify({
+            "error": str(e)
+        }), 500
 
 
 if __name__ == "__main__":
