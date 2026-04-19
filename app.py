@@ -7,7 +7,7 @@ import json
 app = Flask(__name__)
 CORS(app)
 
-# Groq client (expects GROQ_API_KEY in Render environment variables)
+# Groq client (requires GROQ_API_KEY in Render env vars)
 client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 
 @app.route("/generate", methods=["POST"])
@@ -19,31 +19,32 @@ def generate():
     audience = data.get("audience", "")
 
     prompt = f"""
-You are a JSON generator.
+You are a strict JSON generator.
 
-Return ONLY valid JSON.
-No markdown.
-No explanation.
-No backticks.
+Rules:
+- Output ONLY valid JSON
+- Do NOT use markdown or backticks
+- Do NOT leave empty fields
+- Every field must contain useful marketing content
 
 Business: {business}
 Goal: {goal}
 Audience: {audience}
 
-Output format:
+Return EXACTLY this structure:
 
 {{
-  "offer": "",
-  "angles": [],
-  "facebook_ad": "",
+  "offer": "string",
+  "angles": ["string", "string", "string"],
+  "facebook_ad": "string",
   "google_ads": {{
-    "headlines": [],
-    "descriptions": []
+    "headlines": ["string", "string", "string"],
+    "descriptions": ["string", "string", "string"]
   }},
-  "ctas": [],
+  "ctas": ["string", "string"],
   "email": {{
-    "subject": "",
-    "body": ""
+    "subject": "string",
+    "body": "string"
   }}
 }}
 """
@@ -60,13 +61,12 @@ Output format:
 
         response_text = completion.choices[0].message.content.strip()
 
-        # Try strict JSON parse
+        # Try direct JSON parse
         try:
-            response_json = json.loads(response_text)
-            return jsonify(response_json)
+            return jsonify(json.loads(response_text))
 
         except Exception:
-            # fallback: try to extract JSON block
+            # fallback: extract JSON block
             start = response_text.find("{")
             end = response_text.rfind("}")
 
