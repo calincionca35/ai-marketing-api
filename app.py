@@ -1,9 +1,14 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from groq import Groq
 import os
+import json
 
 app = Flask(__name__)
 CORS(app)
+
+# Groq client (API key stored in Render/GitHub env vars)
+client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 
 @app.route("/generate", methods=["POST"])
 def generate():
@@ -13,44 +18,56 @@ def generate():
     goal = data.get("goal", "")
     audience = data.get("audience", "")
 
-    return jsonify({
-        "offer": "For busy professionals, get premium coffee in under 2 minutes without waiting in line.",
+    prompt = f"""
+Return ONLY valid JSON.
 
-        "angles": [
-            "Speed: No waiting",
-            "Convenience: Order ahead",
-            "Productivity: Save time every morning",
-            "Quality: Premium taste fast",
-            "Stress-free mornings"
+Create a marketing campaign.
+
+Business: {business}
+Goal: {goal}
+Audience: {audience}
+
+Format exactly like this:
+
+{{
+  "offer": "",
+  "angles": [],
+  "facebook_ad": "",
+  "google_ads": {{
+    "headlines": [],
+    "descriptions": []
+  }},
+  "ctas": [],
+  "email": {{
+    "subject": "",
+    "body": ""
+  }}
+}}
+"""
+
+    completion = client.chat.completions.create(
+        model="llama-3.3-70b-versatile",
+        messages=[
+            {"role": "user", "content": prompt}
         ],
+        temperature=0.7,
+        max_completion_tokens=1500
+    )
 
-        "facebook_ad": "Still waiting in line for coffee? Get premium coffee in under 2 minutes and take back your mornings.",
+    response_text = completion.choices[0].message.content
 
-        "google_ads": {
-            "headlines": [
-                "Fast Coffee in 2 Minutes",
-                "Skip the Coffee Line",
-                "Order Ahead Coffee"
-            ],
-            "descriptions": [
-                "Premium coffee, no waiting.",
-                "Order ahead and grab instantly."
-            ]
-        },
+    # Convert AI text → real JSON
+    try:
+        response_json = json.loads(response_text)
+    except Exception:
+        return jsonify({
+            "error": "Invalid JSON returned from model",
+            "raw": response_text
+        }), 500
 
-        "ctas": [
-            "Order Ahead Now",
-            "Skip the Line",
-            "Get Coffee Fast"
-        ],
-
-        "email": {
-            "subject": "Your coffee is ready before you arrive",
-            "body": "Order ahead and get premium coffee in under 2 minutes. No more waiting in line."
-        }
-    })
+    return jsonify(response_json)
 
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 10000))
+    port = int(os.environ.get("PORT", 1000))
     app.run(host="0.0.0.0", port=port)
