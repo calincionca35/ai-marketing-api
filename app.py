@@ -10,7 +10,7 @@ CORS(app)
 # Groq client
 client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 
-# Load prompt config
+# Load config
 def load_prompt_config():
     with open("prompt_config.json", "r") as f:
         return json.load(f)
@@ -18,19 +18,17 @@ def load_prompt_config():
 config = load_prompt_config()
 
 
-# ---------- ENFORCE GOOGLE ADS LIMITS ----------
+# Enforce Google Ads limits (safety layer)
 def enforce_limits(data):
     if "google_ads" in data:
         if "headlines" in data["google_ads"]:
             data["google_ads"]["headlines"] = [
                 h[:30] for h in data["google_ads"]["headlines"]
             ]
-
         if "descriptions" in data["google_ads"]:
             data["google_ads"]["descriptions"] = [
                 d[:90] for d in data["google_ads"]["descriptions"]
             ]
-
     return data
 
 
@@ -42,17 +40,24 @@ def generate():
     goal = data.get("goal", "")
     audience = data.get("audience", "")
 
+    # Pull rules from config
+    general_rules = "\n".join(config["general_rules"])
+    google_rules = "\n".join(config["google_ads_rules"])
+
     prompt = f"""
 {config["system_prompt"]}
 
-Rules:
-{chr(10).join(config["rules"])}
+General Rules:
+{general_rules}
 
 Return ONLY valid JSON.
 
 Business: {business}
 Goal: {goal}
 Audience: {audience}
+
+Google Ads Rules (apply ONLY to Google Ads section):
+{google_rules}
 
 Return EXACT format:
 
@@ -96,7 +101,7 @@ Return EXACT format:
     try:
         data = json.loads(response_text[start:end+1])
 
-        # enforce Google Ads limits here
+        # Enforce limits as backup safety
         data = enforce_limits(data)
 
         return jsonify(data)
