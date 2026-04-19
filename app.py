@@ -18,20 +18,15 @@ def generate():
     audience = data.get("audience", "")
 
     prompt = f"""
-You are a strict JSON generator.
-
 Return ONLY valid JSON.
-No markdown.
-No explanation.
-No extra text.
 
-All fields MUST be filled with real marketing content.
+Do not return empty values.
 
 Business: {business}
 Goal: {goal}
 Audience: {audience}
 
-Return EXACT JSON:
+Return:
 
 {{
   "offer": "string",
@@ -49,43 +44,27 @@ Return EXACT JSON:
 }}
 """
 
+    completion = client.chat.completions.create(
+        model="llama-3.3-70b-versatile",
+        messages=[{"role": "user", "content": prompt}],
+        temperature=0.8,
+        max_completion_tokens=1200
+    )
+
+    raw = completion.choices[0].message.content.strip()
+
+    print("RAW:", raw)
+
+    start = raw.find("{")
+    end = raw.rfind("}")
+
+    if start == -1 or end == -1:
+        return jsonify({"error": "No JSON returned", "raw": raw}), 500
+
     try:
-        completion = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0.7,
-            max_completion_tokens=1500
-        )
-
-        raw = completion.choices[0].message.content.strip()
-
-        print("RAW MODEL OUTPUT:\n", raw)
-
-        # extract JSON safely
-        start = raw.find("{")
-        end = raw.rfind("}")
-
-        if start == -1 or end == -1:
-            return jsonify({
-                "error": "No JSON found in model output",
-                "raw": raw
-            }), 500
-
-        json_text = raw[start:end+1]
-
-        try:
-            return jsonify(json.loads(json_text))
-        except Exception as e:
-            return jsonify({
-                "error": "JSON parse failed",
-                "details": str(e),
-                "raw": raw
-            }), 500
-
+        return jsonify(json.loads(raw[start:end+1]))
     except Exception as e:
-        return jsonify({
-            "error": str(e)
-        }), 500
+        return jsonify({"error": str(e), "raw": raw}), 500
 
 
 if __name__ == "__main__":
