@@ -16,7 +16,10 @@
     "Rewrite content so it fits naturally within limits",
     "Use as much of the allowed character limit as possible",
     "Headlines should be close to 30 characters",
-    "Descriptions should be close to 90 characters",
-    "Maximize persuasion within the limit"
+    "Descriptions MUST be full sentences with clear benefit and CTA",
+    "Descriptions MUST be persuasive and conversion-focused",
+    "Descriptions MUST be close to 90 characters",
+    "Descriptions MUST include a benefit or outcome",
+    "Descriptions MUST feel like real paid ads, not short phrases"
   ]
 }
