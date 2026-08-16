@@ -108,7 +108,6 @@ Return ONLY valid JSON in this format:
         return jsonify(parsed)
 
     except Exception as e:
-        print("ERROR:", repr(e))
         return jsonify({
             "error": str(e)
         }), 500
