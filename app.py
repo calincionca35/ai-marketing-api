@@ -92,7 +92,7 @@ Return ONLY valid JSON in this format:
             model=MODEL,
             messages=[{"role": "user", "content": prompt}],
             temperature=0.6,
-            max_completion_tokens=1200
+            max_completion_tokens=3000
         )
 
         raw = completion.choices[0].message.content.strip()
