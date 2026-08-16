@@ -10,6 +10,8 @@ CORS(app)
 
 client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 
+MODEL = "openai/gpt-oss-120b"
+
 
 def load_prompt_config():
     with open("prompt_config.json", "r") as f:
@@ -87,7 +89,7 @@ Return ONLY valid JSON in this format:
 """
 
         completion = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
+            model=MODEL,
             messages=[{"role": "user", "content": prompt}],
             temperature=0.6,
             max_completion_tokens=1200
